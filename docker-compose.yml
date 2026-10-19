@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  # ---- PostgreSQL ----
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-forensics_db}
+      POSTGRES_USER: ${POSTGRES_USER:-forensics_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-forensics_pass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-forensics_user} -d ${POSTGRES_DB:-forensics_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ---- FastAPI Backend ----
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB:-forensics_db}
+      - POSTGRES_USER=${POSTGRES_USER:-forensics_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-forensics_pass}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-forensics_user}:${POSTGRES_PASSWORD:-forensics_pass}@db:5432/${POSTGRES_DB:-forensics_db}
+      - DATABASE_URL_SYNC=postgresql://${POSTGRES_USER:-forensics_user}:${POSTGRES_PASSWORD:-forensics_pass}@db:5432/${POSTGRES_DB:-forensics_db}
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-change-in-production}
+      - JWT_ALGORITHM=${JWT_ALGORITHM:-HS256}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-480}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["http://localhost:5173","http://localhost:3000"]}
+      - MAX_UPLOAD_SIZE_MB=${MAX_UPLOAD_SIZE_MB:-100}
+      - MODEL_DIR=/app/ml/models
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/backend/uploads
+      - ./backend/reports:/app/backend/reports
+      - ./ml/models:/app/ml/models
+
+  # ---- React Frontend ----
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  pgdata:

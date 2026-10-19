@@ -1,0 +1,83 @@
+{
+  "dataset": "synthetic_demo",
+  "n_records": 10000,
+  "n_features": 37,
+  "train_size": 8000,
+  "test_size": 2000,
+  "isolation_forest": {
+    "training_time_s": 0.23,
+    "anomaly_count_test": 205,
+    "anomaly_rate_test": 0.1025,
+    "parameters": {
+      "n_estimators": 200,
+      "max_samples": "auto",
+      "contamination": 0.1,
+      "random_state": 42,
+      "n_jobs": -1
+    }
+  },
+  "random_forest": {
+    "training_time_s": 0.47,
+    "accuracy": 0.9285,
+    "f1_weighted": 0.9091,
+    "precision_weighted": 0.9179,
+    "recall_weighted": 0.9285,
+    "class_names": [
+      "BENIGN",
+      "Bot",
+      "DDoS",
+      "DoS Hulk",
+      "FTP-Patator",
+      "PortScan",
+      "Web Attack - Brute Force"
+    ],
+    "parameters": {
+      "n_estimators": "200",
+      "max_depth": "20",
+      "min_samples_split": "5",
+      "min_samples_leaf": "2",
+      "class_weight": "balanced",
+      "random_state": "42",
+      "n_jobs": "-1"
+    }
+  },
+  "feature_importance": {
+    "Max Packet Length": 0.094236,
+    "Destination Port": 0.063758,
+    "Bwd Packets/s": 0.053265,
+    "Flow Bytes/s": 0.051373,
+    "Bwd IAT Total": 0.048001,
+    "Idle Mean": 0.047497,
+    "Total Fwd Packets": 0.040865,
+    "Flow IAT Mean": 0.040594,
+    "Flow Packets/s": 0.039714,
+    "Total Length of Fwd Packets": 0.038894,
+    "Init_Win_bytes_backward": 0.034974,
+    "Fwd Packet Length Max": 0.033983,
+    "Active Mean": 0.033843,
+    "Avg Bwd Segment Size": 0.031793,
+    "Packet Length Variance": 0.031549,
+    "Fwd Packets/s": 0.028397,
+    "Flow IAT Std": 0.028276,
+    "Flow Duration": 0.028216,
+    "Fwd IAT Total": 0.025211,
+    "Packet Length Mean": 0.021901,
+    "Down/Up Ratio": 0.020416,
+    "Fwd Packet Length Mean": 0.019173,
+    "Init_Win_bytes_forward": 0.018732,
+    "Average Packet Size": 0.018115,
+    "Bwd Packet Length Mean": 0.016746,
+    "Avg Fwd Segment Size": 0.01637,
+    "SYN Flag Count": 0.014722,
+    "Packet Length Std": 0.013804,
+    "Total Length of Bwd Packets": 0.012338,
+    "Bwd Packet Length Max": 0.011734,
+    "Min Packet Length": 0.007315,
+    "Total Backward Packets": 0.006187,
+    "Fwd PSH Flags": 0.003239,
+    "ACK Flag Count": 0.002841,
+    "RST Flag Count": 0.001917,
+    "FIN Flag Count": 1.2e-05,
+    "Fwd URG Flags": 0.0
+  }
+}

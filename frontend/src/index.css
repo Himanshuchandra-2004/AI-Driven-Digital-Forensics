@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cyber-darker text-gray-100;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-cyber-dark;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-700 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-cyber-card border border-cyber-border rounded-xl p-6 
+           shadow-lg shadow-black/20 backdrop-blur-sm
+           transition-all duration-200;
+  }
+  .card:hover {
+    @apply border-gray-600 shadow-xl;
+  }
+
+  .btn-primary {
+    @apply bg-cyber-accent hover:bg-blue-600 text-white px-4 py-2 rounded-lg 
+           font-medium transition-all duration-200 
+           shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg 
+           font-medium transition-all duration-200 border border-gray-600;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg 
+           font-medium transition-all duration-200 
+           shadow-lg shadow-red-500/20;
+  }
+
+  .btn-success {
+    @apply bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg 
+           font-medium transition-all duration-200;
+  }
+
+  .input-field {
+    @apply bg-gray-800 border border-gray-700 text-gray-100 rounded-lg px-4 py-2.5
+           focus:ring-2 focus:ring-cyber-accent focus:border-transparent 
+           outline-none transition-all duration-200
+           placeholder:text-gray-500;
+  }
+
+  .severity-critical {
+    @apply bg-red-500/10 text-red-400 border-red-500/30;
+  }
+  .severity-high {
+    @apply bg-orange-500/10 text-orange-400 border-orange-500/30;
+  }
+  .severity-medium {
+    @apply bg-yellow-500/10 text-yellow-400 border-yellow-500/30;
+  }
+  .severity-low {
+    @apply bg-green-500/10 text-green-400 border-green-500/30;
+  }
+
+  .badge {
+    @apply px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border;
+  }
+
+  .table-header {
+    @apply bg-gray-800/50 text-gray-400 text-xs font-semibold uppercase tracking-wider;
+  }
+
+  .table-row {
+    @apply border-b border-gray-800 hover:bg-gray-800/30 transition-colors;
+  }
+
+  .stat-card {
+    @apply card flex flex-col gap-2;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-400 
+           hover:text-white hover:bg-gray-800/50 transition-all duration-200
+           text-sm font-medium;
+  }
+  .nav-link.active {
+    @apply text-white bg-cyber-accent/10 border-l-2 border-cyber-accent;
+  }
+
+  .pulse-dot {
+    @apply w-2 h-2 rounded-full animate-pulse;
+  }
+
+  .glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+/* Chart styling */
+.recharts-text {
+  fill: #9ca3af !important;
+  font-size: 11px;
+}
+.recharts-cartesian-grid line {
+  stroke: #1f2937 !important;
+}
