@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import type {
-  AnalysisRun, AnomalyDetection, Case, ChainOfCustodyEntry,
+  AnalysisRun, AnomalyDetection, AuditLogResponse, Case, ChainOfCustodyEntry,
   DashboardStats, Evidence, EvidenceVerification, Incident,
   ModelVersion, ReportInfo, ThreatDetection, TokenResponse,
 } from '../types';
@@ -121,6 +121,14 @@ export const dashboardApi = {
 // ---- Demo ----
 export const demoApi = {
   load: () => api.post('/demo/load'),
+};
+
+// ---- System ----
+export const systemApi = {
+  auditLog: (limit: number = 50) =>
+    api.get<AuditLogResponse>(`/system/audit-log?limit=${limit}`),
+  info: () => api.get('/system/info'),
+  health: () => api.get('/system/health'),
 };
 
 export default api;

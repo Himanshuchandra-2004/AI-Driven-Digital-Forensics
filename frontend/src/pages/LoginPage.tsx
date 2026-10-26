@@ -1,9 +1,10 @@
-/** Login page with cybersecurity aesthetic. */
+/** Login page — neon glass card over animated falling digits. */
 
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, ArrowRight } from 'lucide-react';
+import AuthShell, { AuthField } from '../components/ui/AuthShell';
 
 export default function LoginPage() {
   const { user, login } = useAuth();
@@ -29,63 +30,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cyber-darker relative overflow-hidden">
-      {/* Background grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
-      
-      <div className="relative z-10 w-full max-w-md px-6">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
-            <Shield className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-white">AI-Driven Digital Forensics</h1>
-          <p className="text-gray-500 text-sm mt-1">Network Forensics Investigation System</p>
+    <AuthShell mode="login">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+        {error && <div className="auth-error">{error}</div>}
+        <AuthField icon={User} type="text" value={username} onChange={(e) => setUsername(e.target.value)}
+          placeholder="Username" required autoFocus />
+        <AuthField icon={Lock} type={showPw ? 'text' : 'password'} value={password}
+          onChange={(e) => setPassword(e.target.value)} placeholder="Password" required
+          right={<button type="button" onClick={() => setShowPw(!showPw)} className="auth-eye">
+            {showPw ? <EyeOff size={20} /> : <Eye size={20} />}</button>} />
+        <div className="flex justify-between text-sm">
+          <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" className="accent-cyan-400" /> Remember me</label>
+          <a href="#" onClick={(e) => e.preventDefault()} className="auth-link">Forgot Password?</a>
         </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="card space-y-5">
-          <h2 className="text-lg font-semibold text-white">Sign In</h2>
-
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1.5">Username</label>
-            <input
-              type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-              className="input-field w-full" placeholder="Enter username" required autoFocus
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1.5">Password</label>
-            <div className="relative">
-              <input
-                type={showPw ? 'text' : 'password'} value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="input-field w-full pr-10" placeholder="Enter password" required
-              />
-              <button type="button" onClick={() => setShowPw(!showPw)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
-                {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" disabled={loading} className="btn-primary w-full py-3">
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-
-          <p className="text-center text-sm text-gray-500">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-cyber-accent hover:underline">Register</Link>
-          </p>
-        </form>
-      </div>
-    </div>
+        <button type="submit" disabled={loading} className="auth-primary">
+          {loading ? 'Signing in...' : 'Sign In'} <ArrowRight size={20} />
+        </button>
+        <p className="text-center text-sm">Don't have an account? <Link to="/register" className="auth-link">Register</Link></p>
+      </form>
+    </AuthShell>
   );
 }

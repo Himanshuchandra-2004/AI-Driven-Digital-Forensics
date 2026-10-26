@@ -63,6 +63,9 @@ htmlcov/
 
 # Frontend build
 frontend/dist/
+frontend-old/
+*.tsbuildinfo
+*.tgz
 
 # Logs
 *.log

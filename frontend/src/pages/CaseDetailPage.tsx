@@ -12,8 +12,9 @@ import type {
 } from '../types';
 import {
   Upload, Play, FileText, Shield, AlertTriangle, Link2,
-  CheckCircle, XCircle, Download, Clock, Info,
+  CheckCircle, XCircle, Download, Clock, Info, Trash2,
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell,
@@ -25,9 +26,12 @@ const CHART_COLORS = ['#3b82f6', '#8b5cf6', '#f97316', '#ef4444', '#10b981', '#e
 export default function CaseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [tab, setTab] = useState('Overview');
   const [caseData, setCaseData] = useState<Case | null>(null);
   const [runs, setRuns] = useState<AnalysisRun[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [threats, setThreats] = useState<ThreatDetection[]>([]);
   const [anomalies, setAnomalies] = useState<AnomalyDetection[]>([]);
   const [evidence, setEvidence] = useState<Evidence[]>([]);
@@ -105,6 +109,19 @@ export default function CaseDetailPage() {
     }
   };
 
+  const handleDeleteCase = async () => {
+    if (!id) return;
+    setDeleting(true);
+    try {
+      await casesApi.delete(id);
+      navigate('/cases');
+    } catch (err) {
+      console.error('Failed to delete case:', err);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) return <div className="flex justify-center py-20"><div className="animate-spin w-8 h-8 border-2 border-cyber-accent border-t-transparent rounded-full" /></div>;
   if (!caseData) return <p className="text-gray-500">Case not found</p>;
 
@@ -121,7 +138,51 @@ export default function CaseDetailPage() {
             {caseData.status === 'analyzing' && <span className="pulse-dot bg-amber-500" />}
           </div>
         </div>
+
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-medium flex items-center gap-1.5 transition-colors"
+            title="Delete Case (Admin Only)"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Delete Case
+          </button>
+        )}
       </div>
+
+      {/* Delete Confirmation Modal (Admin Only) */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowDeleteModal(false)}>
+          <div onClick={(e) => e.stopPropagation()} className="card w-full max-w-md space-y-4 border-red-500/40 shadow-2xl shadow-red-950/50">
+            <div className="flex items-center gap-3 text-red-400">
+              <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <h2 className="text-lg font-bold text-white">Delete Case Permanently?</h2>
+            </div>
+            <p className="text-sm text-gray-300">
+              Are you sure you want to delete <span className="text-white font-semibold">"{caseData.name}"</span>?
+            </p>
+            <p className="text-xs text-gray-400 bg-red-500/10 p-3 rounded border border-red-500/20">
+              ⚠️ This action cannot be undone. All associated network evidence records, machine learning threat classifications, anomaly detections, and generated reports will be permanently deleted.
+            </p>
+            <div className="flex justify-end gap-3 pt-2">
+              <button type="button" onClick={() => setShowDeleteModal(false)} className="btn-secondary text-sm">
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteCase}
+                disabled={deleting}
+                className="px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 text-sm font-medium transition-colors"
+              >
+                {deleting ? 'Deleting...' : 'Confirm Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 overflow-x-auto border-b border-cyber-border pb-0">

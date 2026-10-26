@@ -3,15 +3,17 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
-  LayoutDashboard, FolderOpen, Shield, Cpu, User, LogOut, Zap
+  LayoutDashboard, FolderOpen, Shield, Cpu, User, LogOut, Zap, ScrollText
 } from 'lucide-react';
 import { demoApi } from '../../api/client';
 import { useState } from 'react';
+import Logo from '../ui/Logo';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/cases', icon: FolderOpen, label: 'Cases' },
   { to: '/models', icon: Cpu, label: 'Models' },
+  { to: '/audit-logs', icon: ScrollText, label: 'Audit Logs', adminOnly: true },
   { to: '/profile', icon: User, label: 'Profile' },
 ];
 
@@ -33,13 +35,11 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-cyber-dark border-r border-cyber-border flex flex-col h-full">
+    <aside className="w-64 bg-cyber-dark/90 backdrop-blur-md border-r border-cyber-border flex flex-col h-full relative z-10">
       {/* Logo */}
       <div className="p-5 border-b border-cyber-border">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <Shield className="w-5 h-5 text-white" />
-          </div>
+          <Logo size={40} />
           <div>
             <h1 className="text-sm font-bold text-white tracking-wide">AI Forensics</h1>
             <p className="text-[10px] text-gray-500 uppercase tracking-widest">Network Analysis</p>
@@ -49,19 +49,26 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/'}
-            className={({ isActive }) =>
-              `nav-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <item.icon className="w-4 h-4" />
-            {item.label}
-          </NavLink>
-        ))}
+        {navItems
+          .filter((item) => !item.adminOnly || user?.role === 'admin')
+          .map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              className={({ isActive }) =>
+                `nav-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <item.icon className="w-4 h-4" />
+              <span>{item.label}</span>
+              {item.adminOnly && (
+                <span className="ml-auto text-[9px] uppercase px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">
+                  Admin
+                </span>
+              )}
+            </NavLink>
+          ))}
 
         {/* Demo button */}
         <button

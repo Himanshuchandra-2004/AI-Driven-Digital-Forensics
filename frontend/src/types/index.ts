@@ -175,3 +175,18 @@ export interface ReportInfo {
   file_path: string | null;
   generated_at: string;
 }
+
+export interface AuditLogEntry {
+  timestamp: string;
+  method: string;
+  path: string;
+  status_code: number;
+  duration_ms: number;
+  request_id: string;
+  client_ip: string;
+}
+
+export interface AuditLogResponse {
+  total_entries: number;
+  entries: AuditLogEntry[];
+}

@@ -10,6 +10,7 @@ import CasesPage from './pages/CasesPage';
 import CaseDetailPage from './pages/CaseDetailPage';
 import ModelsPage from './pages/ModelsPage';
 import ProfilePage from './pages/ProfilePage';
+import AuditLogsPage from './pages/AuditLogsPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="cases" element={<CasesPage />} />
         <Route path="cases/:id/*" element={<CaseDetailPage />} />
         <Route path="models" element={<ModelsPage />} />
+        <Route path="audit-logs" element={<AuditLogsPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

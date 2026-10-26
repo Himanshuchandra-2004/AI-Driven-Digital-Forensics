@@ -1,9 +1,10 @@
-/** Register page. */
+/** Register page — same glass card as Login. */
 
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield } from 'lucide-react';
+import { ArrowRight, AtSign, Lock, Mail, User } from 'lucide-react';
+import AuthShell, { AuthField } from '../components/ui/AuthShell';
 
 export default function RegisterPage() {
   const { user, register } = useAuth();
@@ -13,17 +14,14 @@ export default function RegisterPage() {
 
   if (user) return <Navigate to="/" replace />;
 
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [k]: e.target.value });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      await register(
-        form.username.trim(),
-        form.email.trim(),
-        form.password.trim(),
-        form.fullName.trim()
-      );
+      await register(form.username.trim(), form.email.trim(), form.password.trim(), form.fullName.trim());
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Registration failed');
     } finally {
@@ -32,51 +30,18 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cyber-darker relative overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
-      
-      <div className="relative z-10 w-full max-w-md px-6">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
-            <Shield className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-white">Create Account</h1>
-          <p className="text-gray-500 text-sm mt-1">Join the forensics investigation team</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="card space-y-4">
-          {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-lg">{error}</div>}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Full Name</label>
-            <input type="text" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-              className="input-field w-full" placeholder="Your full name" required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Username</label>
-            <input type="text" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="input-field w-full" placeholder="Choose a username" required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
-            <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="input-field w-full" placeholder="your@email.com" required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Password</label>
-            <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="input-field w-full" placeholder="Min 8 characters" required minLength={8} />
-          </div>
-
-          <button type="submit" disabled={loading} className="btn-primary w-full py-3">
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-
-          <p className="text-center text-sm text-gray-500">
-            Already have an account? <Link to="/login" className="text-cyber-accent hover:underline">Sign In</Link>
-          </p>
-        </form>
-      </div>
-    </div>
+    <AuthShell mode="register">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+        {error && <div className="auth-error">{error}</div>}
+        <AuthField icon={User} value={form.fullName} onChange={set('fullName')} placeholder="Full Name" required />
+        <AuthField icon={AtSign} value={form.username} onChange={set('username')} placeholder="Username" required />
+        <AuthField icon={Mail} type="email" value={form.email} onChange={set('email')} placeholder="Email" required />
+        <AuthField icon={Lock} type="password" value={form.password} onChange={set('password')} placeholder="Password (min 8 characters)" required minLength={8} />
+        <button type="submit" disabled={loading} className="auth-primary">
+          {loading ? 'Creating account...' : 'Create Account'} <ArrowRight size={20} />
+        </button>
+        <p className="text-center text-sm">Already have an account? <Link to="/login" className="auth-link">Sign In</Link></p>
+      </form>
+    </AuthShell>
   );
 }
